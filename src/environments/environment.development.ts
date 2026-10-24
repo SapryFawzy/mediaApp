@@ -1,0 +1,3 @@
+export const environment = {
+  BASE_URL: 'https://route-posts.routemisr.com/',
+};

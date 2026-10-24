@@ -1,0 +1,22 @@
+<div
+  class="loading-overlay"
+  [class.loading-overlay--visible]="isLoading()"
+  [attr.aria-hidden]="!isLoading()"
+  [attr.inert]="!isLoading() ? '' : null"
+>
+  <section class="loading-card" role="status" aria-live="polite" aria-atomic="true">
+    <div class="loader-ring" aria-hidden="true"></div>
+
+    <h2 class="loading-title">
+      {{ message() }}
+    </h2>
+
+    <p class="loading-description">We're processing your request securely.</p>
+
+    <div class="loading-dots" aria-hidden="true">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </section>
+</div>

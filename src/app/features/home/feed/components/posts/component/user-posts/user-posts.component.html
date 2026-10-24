@@ -1,0 +1,15 @@
+@if (!posts().length) {
+  <div class="space-y-4">
+    <div
+      class="rounded-2xl border border-slate-200 bg-white p-10 text-center text-slate-500 shadow-sm"
+    >
+      No posts yet. Be the first one to publish.
+    </div>
+  </div>
+} @else {
+  <div class="grid gap-4">
+    @for (post of posts(); track post.id) {
+      <app-post [postData]="post" (udatePosts)="updatePosts()"></app-post>
+    }
+  </div>
+}

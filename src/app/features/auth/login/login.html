@@ -1,0 +1,87 @@
+<form (ngSubmit)="signIn()" [formGroup]="SignInForm" class="space-y-5">
+  <div class="mb-7">
+    <h2 class="text-2xl font-bold tracking-tight text-gray-900">Create your account</h2>
+    <p class="mt-2 text-sm leading-6 text-gray-500">
+      Join our community and start connecting with people.
+    </p>
+  </div>
+  <div class="relative">
+    <input
+      formControlName="email"
+      type="email"
+      name="email"
+      id="email"
+      placeholder=" "
+      autocomplete="email"
+      required
+      class="peer block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 pb-3 pt-6 text-sm text-gray-900 outline-none transition duration-200 placeholder:text-transparent focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
+    />
+    <label
+      for="email"
+      class="pointer-events-none absolute left-4 top-4 origin-left text-sm text-gray-500 transition-all duration-200 peer-focus:top-2 peer-focus:scale-90 peer-focus:text-blue-600 peer-not-placeholder-shown:top-2 peer-[:not(:placeholder-shown)]:scale-90"
+    >
+      Email address
+    </label>
+    @if (SignInForm.get('email')?.invalid && SignInForm.get('email')?.touched) {
+      <div class="border-red-400 border rounded-2xl mt-2 py-2 px-4">
+        <app-form-error-msg [errorMsg]="'Email is invalid.'"></app-form-error-msg>
+      </div>
+    }
+  </div>
+  <div class="relative">
+    <input
+      #pass
+      formControlName="password"
+      type="password"
+      name="password"
+      id="password"
+      placeholder=" "
+      autocomplete="new-password"
+      minlength="8"
+      required
+      class="peer block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 pb-3 pt-6 text-sm text-gray-900 outline-none transition duration-200 placeholder:text-transparent focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
+    />
+    <div (click)="showPassword(pass)" class="absolute top-1/2 -translate-y-1/2 right-4">
+      <i
+        [class]="{
+          'fa-eye': pass.type == 'password',
+          'fa-eye-slash': pass.type == 'text',
+        }"
+        class="fa-solid"
+      ></i>
+    </div>
+    <label
+      for="password"
+      class="pointer-events-none absolute left-4 top-4 origin-left text-sm text-gray-500 transition-all duration-200 peer-focus:top-2 peer-focus:scale-90 peer-focus:text-blue-600 peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:scale-90"
+    >
+      Password
+    </label>
+  </div>
+  @if (SignInForm.get('password')?.invalid && SignInForm.get('password')?.touched) {
+    <div class="border-red-400 border rounded-2xl mt-2 py-2 px-4">
+      <app-form-error-msg [errorMsg]="'Password is invalid.'"></app-form-error-msg>
+    </div>
+  }
+  @if (iserror()) {
+    <div class="border-red-400 border rounded-2xl mt-2 py-2 px-4">
+      <app-form-error-msg [errorMsg]="error()"></app-form-error-msg>
+    </div>
+  }
+  <button
+    type="submit"
+    class="group flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-200/60 transition duration-200 hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-200/70 focus:outline-none focus:ring-4 focus:ring-blue-200 active:translate-y-0"
+  >
+    Sign Up
+    <span class="transition-transform duration-200 group-hover:translate-x-1"> → </span>
+  </button>
+  <p class="pt-1 text-center text-sm text-gray-500">
+    Create an Account ?
+    <button
+      type="button"
+      routerLink="/registration"
+      class="font-semibold cursor-pointer text-blue-600 transition hover:text-blue-700 hover:underline"
+    >
+      Registr
+    </button>
+  </p>
+</form>

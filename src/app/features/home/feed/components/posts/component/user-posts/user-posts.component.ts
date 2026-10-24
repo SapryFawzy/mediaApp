@@ -1,0 +1,30 @@
+import { Component, inject, input, output, signal, WritableSignal } from '@angular/core';
+import { Post } from '../../../../../../../core/models/post.interface';
+import { PostsService } from '../../../../../../../core/auth/services/main/posts.service';
+import { PostComponent } from '../post/post.component';
+
+@Component({
+  selector: 'app-user-posts',
+  imports: [PostComponent],
+  templateUrl: './user-posts.component.html',
+  styleUrl: './user-posts.component.css',
+})
+export class UserPostsComponent {
+  private readonly postsService = inject(PostsService);
+  posts: WritableSignal<Post[]> = signal([]);
+  udatePosts = output<boolean>();
+
+  ngOnInit(): void {
+    this.getUserPosts();
+  }
+
+  updatePosts() {
+    this.getUserPosts();
+  }
+
+  getUserPosts() {
+    this.postsService.getUserPosts().subscribe((res: any) => {
+      this.posts.set(res.data.posts);
+    });
+  }
+}

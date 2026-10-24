@@ -1,0 +1,22 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { CommunityPostsComponent } from './community-posts.component';
+
+describe('CommunityPostsComponent', () => {
+  let component: CommunityPostsComponent;
+  let fixture: ComponentFixture<CommunityPostsComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [CommunityPostsComponent],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(CommunityPostsComponent);
+    component = fixture.componentInstance;
+    await fixture.whenStable();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

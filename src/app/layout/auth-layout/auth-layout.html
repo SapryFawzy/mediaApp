@@ -1,0 +1,96 @@
+<div class="min-h-screen bg-linear-to-br from-blue-50 via-white to-indigo-50">
+  <div class="container mx-auto px-4 md:py-16 lg:py-20">
+    <div class="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16">
+      <div class="mx-auto w-full max-w-xl text-center lg:text-left">
+        <div
+          class="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white px-4 py-2 text-sm font-medium text-blue-600 shadow-sm"
+        >
+          <span class="h-2 w-2 rounded-full bg-blue-500"></span>
+          Connect. Share. Belong.
+        </div>
+        <h1
+          class="mb-6 text-4xl font-extrabold leading-tight tracking-tight text-gray-900 sm:text-5xl lg:text-6xl"
+        >
+          Welcome to our
+          <span class="text-blue-600">Social Media</span>
+        </h1>
+        <p class="mx-auto max-w-lg text-base leading-8 text-gray-600 sm:text-lg lg:mx-0">
+          The Social App is a modern social networking platform designed to bring people together.
+          Create your profile, share your thoughts, discover new content, and build meaningful
+          connections in a simple and engaging environment.
+        </p>
+        <div class="mt-10 grid grid-cols-1 gap-4 text-left sm:grid-cols-3">
+          <div
+            class="rounded-2xl border border-gray-100 bg-white/80 p-4 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-md"
+          >
+            <div
+              class="mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-blue-100 text-xl"
+            >
+              👥
+            </div>
+            <h3 class="mb-1 font-semibold text-gray-900">Connect</h3>
+            <p class="text-sm leading-6 text-gray-500">Meet people and grow your community.</p>
+          </div>
+          <div
+            class="rounded-2xl border border-gray-100 bg-white/80 p-4 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-md"
+          >
+            <div
+              class="mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-100 text-xl"
+            >
+              💬
+            </div>
+            <h3 class="mb-1 font-semibold text-gray-900">Interact</h3>
+            <p class="text-sm leading-6 text-gray-500">Share ideas and join conversations.</p>
+          </div>
+          <div
+            class="rounded-2xl border border-gray-100 bg-white/80 p-4 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-md"
+          >
+            <div
+              class="mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-purple-100 text-xl"
+            >
+              ✨
+            </div>
+            <h3 class="mb-1 font-semibold text-gray-900">Discover</h3>
+            <p class="text-sm leading-6 text-gray-500">Explore content that inspires you.</p>
+          </div>
+        </div>
+      </div>
+      <div class="mx-auto w-full max-w-md">
+        <div
+          class="overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-xl shadow-blue-100/50"
+        >
+          <div class="px-6 pb-5 pt-8 text-center sm:px-8">
+            <h2 class="text-2xl font-bold tracking-tight text-gray-900">Join our community</h2>
+            <p class="mt-2 text-sm leading-6 text-gray-500">
+              Sign in or create an account to get started.
+            </p>
+          </div>
+          <div class="px-6 sm:px-8">
+            <div class="grid grid-cols-2 gap-2 rounded-xl bg-gray-100 p-1">
+              <button
+                routerLink="/registration"
+                routerLinkActive="!bg-white !text-blue-600 !shadow-sm"
+                class="cursor-pointer rounded-lg px-4 py-3 text-sm font-semibold text-gray-500 transition duration-200 hover:text-blue-600"
+              >
+                Create Account
+              </button>
+              <button
+                routerLink="/login"
+                routerLinkActive="!bg-white !text-blue-600 !shadow-sm"
+                class="cursor-pointer rounded-lg px-4 py-3 text-sm font-semibold text-gray-500 transition duration-200 hover:text-blue-600"
+              >
+                Sign In
+              </button>
+            </div>
+          </div>
+          <div class="px-6 pb-8 pt-6 sm:px-8">
+            <router-outlet></router-outlet>
+          </div>
+        </div>
+        <p class="mt-6 text-center text-xs leading-5 text-gray-400">
+          Your community starts here. Connect with the world.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

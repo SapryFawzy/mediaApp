@@ -1,0 +1,268 @@
+<form (ngSubmit)="registration()" [formGroup]="registrationForm" class="space-y-5">
+  <div class="mb-7">
+    <h2 class="text-2xl font-bold tracking-tight text-gray-900">Create your account</h2>
+    <p class="mt-2 text-sm leading-6 text-gray-500">
+      Join our community and start connecting with people.
+    </p>
+  </div>
+  <div class="relative">
+    <input
+      formControlName="name"
+      type="text"
+      name="name"
+      id="name"
+      placeholder=" "
+      autocomplete="name"
+      required
+      class="peer block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 pb-3 pt-6 text-sm text-gray-900 outline-none transition duration-200 placeholder:text-transparent focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
+    />
+    <label
+      for="name"
+      class="pointer-events-none absolute left-4 top-4 origin-left text-sm text-gray-500 transition-all duration-200 peer-focus:top-2 peer-focus:scale-90 peer-focus:text-blue-600 peer-not-placeholder-shown:top-2 peer-[:not(:placeholder-shown)]:scale-90"
+    >
+      Name
+    </label>
+    @if (registrationForm.get('name')?.invalid && registrationForm.get('name')?.touched) {
+      <div class="border-red-400 border rounded-2xl mt-2 py-2 px-4">
+        @if (registrationForm.get('name')?.getError('required')) {
+          <app-form-error-msg [errorMsg]="'Name is required.'"></app-form-error-msg>
+        }
+        @if (registrationForm.get('name')?.getError('minlength')) {
+          <app-form-error-msg [errorMsg]="'Name require in less 3 chars.'"></app-form-error-msg>
+        }
+      </div>
+    }
+  </div>
+  <div class="relative">
+    <input
+      formControlName="username"
+      type="text"
+      name="userName"
+      id="userName"
+      placeholder=" "
+      autocomplete="username"
+      class="peer block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 pb-3 pt-6 text-sm text-gray-900 outline-none transition duration-200 placeholder:text-transparent focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
+    />
+    <label
+      for="userName"
+      class="pointer-events-none absolute left-4 top-4 origin-left text-sm text-gray-500 transition-all duration-200 peer-focus:top-2 peer-focus:scale-90 peer-focus:text-blue-600 peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:scale-90"
+    >
+      Username (optional)
+    </label>
+  </div>
+  <div class="relative">
+    <input
+      formControlName="email"
+      type="email"
+      name="email"
+      id="email"
+      placeholder=" "
+      autocomplete="email"
+      required
+      class="peer block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 pb-3 pt-6 text-sm text-gray-900 outline-none transition duration-200 placeholder:text-transparent focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
+    />
+    <label
+      for="email"
+      class="pointer-events-none absolute left-4 top-4 origin-left text-sm text-gray-500 transition-all duration-200 peer-focus:top-2 peer-focus:scale-90 peer-focus:text-blue-600 peer-not-placeholder-shown:top-2 peer-[:not(:placeholder-shown)]:scale-90"
+    >
+      Email address
+    </label>
+    @if (registrationForm.get('email')?.invalid && registrationForm.get('email')?.touched) {
+      <div class="border-red-400 border rounded-2xl mt-2 py-2 px-4">
+        @if (registrationForm.get('email')?.getError('required')) {
+          <app-form-error-msg [errorMsg]="'Email is required.'"></app-form-error-msg>
+        }
+        @if (registrationForm.get('email')?.getError('email')) {
+          <app-form-error-msg [errorMsg]="'Email is not valid.'"></app-form-error-msg>
+        }
+      </div>
+    }
+  </div>
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div>
+      <label for="gender" class="mb-2 block text-sm font-medium text-gray-700"> Gender </label>
+      <select
+        formControlName="gender"
+        name="gender"
+        id="gender"
+        required
+        class="block w-full cursor-pointer rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-sm text-gray-700 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
+      >
+        <option value="" disabled selected>Choose gender</option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+      </select>
+      @if (registrationForm.get('gender')?.invalid && registrationForm.get('gender')?.touched) {
+        <div class="border-red-400 border rounded-2xl mt-2 py-2 px-4">
+          @if (registrationForm.get('gender')?.getError('required')) {
+            <app-form-error-msg [errorMsg]="'Gender is required.'"></app-form-error-msg>
+          }
+        </div>
+      }
+    </div>
+    <div>
+      <label for="date" class="mb-2 block text-sm font-medium text-gray-700"> Date of birth </label>
+      <input
+        formControlName="dateOfBirth"
+        type="date"
+        name="date"
+        id="date"
+        autocomplete="bday"
+        required
+        class="block w-full min-w-0 rounded-xl border border-gray-200 bg-gray-50 px-3 py-3 text-sm text-gray-700 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
+      />
+      @if (
+        registrationForm.get('dateOfBirth')?.invalid && registrationForm.get('dateOfBirth')?.touched
+      ) {
+        <div class="border-red-400 border rounded-2xl mt-2 py-2 px-4">
+          @if (registrationForm.get('dateOfBirth')?.getError('required')) {
+            <app-form-error-msg [errorMsg]="'date is required.'"></app-form-error-msg>
+          }
+        </div>
+      }
+    </div>
+  </div>
+  <div class="relative">
+    <input
+      #pass
+      formControlName="password"
+      type="password"
+      name="password"
+      id="password"
+      placeholder=" "
+      autocomplete="new-password"
+      minlength="8"
+      required
+      class="peer block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 pb-3 pt-6 text-sm text-gray-900 outline-none transition duration-200 placeholder:text-transparent focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
+    />
+    <div (click)="showPassword(pass)" class="absolute top-1/2 -translate-y-1/2 right-4">
+      <i
+        [class]="{
+          'fa-eye': pass.type == 'password',
+          'fa-eye-slash': pass.type == 'text',
+        }"
+        class="fa-solid"
+      ></i>
+    </div>
+    <label
+      for="password"
+      class="pointer-events-none absolute left-4 top-4 origin-left text-sm text-gray-500 transition-all duration-200 peer-focus:top-2 peer-focus:scale-90 peer-focus:text-blue-600 peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:scale-90"
+    >
+      Password
+    </label>
+  </div>
+  @if (registrationForm.get('password')?.invalid && registrationForm.get('password')?.touched) {
+    <div class="border-red-400 border rounded-2xl mt-2 py-2 px-4">
+      @if (registrationForm.get('password')?.getError('required')) {
+        <app-form-error-msg [errorMsg]="'Password is required.'"></app-form-error-msg>
+      }
+      @if (registrationForm.get('password')?.getError('pattern')) {
+        <app-form-error-msg
+          [errorMsg]="'Password must be at least 8 characters long and contain at least one uppercase letter,
+              one lowercase letter, one number, and one special character (e.g., @, #, or !).'"
+        ></app-form-error-msg>
+      }
+    </div>
+  }
+  <div class="relative">
+    <input
+      #rePass
+      formControlName="rePassword"
+      type="password"
+      name="confirmPassword"
+      id="confirmPassword"
+      placeholder=" "
+      autocomplete="new-password"
+      required
+      class="peer block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 pb-3 pt-6 text-sm text-gray-900 outline-none transition duration-200 placeholder:text-transparent focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
+    />
+    <div (click)="showPassword(rePass)" class="absolute top-1/2 -translate-y-1/2 right-4">
+      <i
+        [class]="{
+          'fa-eye': rePass.type == 'password',
+          'fa-eye-slash': rePass.type == 'text',
+        }"
+        class="fa-solid"
+      ></i>
+    </div>
+    <label
+      for="confirmPassword"
+      class="pointer-events-none absolute left-4 top-4 origin-left text-sm text-gray-500 transition-all duration-200 peer-focus:top-2 peer-focus:scale-90 peer-focus:text-blue-600 peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:scale-90"
+    >
+      Confirm password
+    </label>
+  </div>
+  @if (registrationForm.get('rePassword')?.invalid && registrationForm.get('rePassword')?.touched) {
+    <div class="border-red-400 border rounded-2xl mt-2 py-2 px-4">
+      @if (registrationForm.get('rePassword')?.getError('required')) {
+        <app-form-error-msg [errorMsg]="'Password is required.'"></app-form-error-msg>
+      }
+      @if (registrationForm.get('rePassword')?.getError('mismatch')) {
+        <app-form-error-msg [errorMsg]="'Password is not compatible.'"></app-form-error-msg>
+      }
+    </div>
+  }
+  <div class="flex items-start gap-3 pt-1">
+    <input
+      #aprrove
+      type="checkbox"
+      id="terms"
+      name="terms"
+      required
+      class="mt-1 h-4 w-4 shrink-0 cursor-pointer rounded border-gray-300 accent-blue-600 focus:ring-2 focus:ring-blue-200"
+    />
+    <label for="terms" class="cursor-pointer text-sm leading-6 text-gray-500">
+      I agree to the
+      <a
+        routerLink=""
+        class="font-medium text-blue-600 transition hover:text-blue-700 hover:underline"
+      >
+        Terms of Service
+      </a>
+      and
+      <a
+        routerLink=""
+        class="font-medium text-blue-600 transition hover:text-blue-700 hover:underline"
+      >
+        Privacy Policy </a
+      >.
+    </label>
+  </div>
+  @if (isapproved()) {
+    <div class="border-red-400 border rounded-2xl mt-2 py-2 px-4">
+      <app-form-error-msg [errorMsg]="'you need to agree on our terms.'"></app-form-error-msg>
+    </div>
+  }
+  @if (registrationForm.valid && isSucssed()) {
+    <div class="border-green-400 bg-green-200 border rounded-2xl mt-2 py-2 px-4">
+      <div class="flex items-center gap-2 text-sm font-bold text-green-600">
+        <span class="h-1.5 w-1.5 rounded-full bg-green-500"></span>
+        <p>{{ sucssesMsg() }}.</p>
+      </div>
+    </div>
+  }
+  @if (iserror()) {
+    <div class="border-red-400 border rounded-2xl mt-2 py-2 px-4">
+      @for (err of error(); track $index) {
+        <app-form-error-msg [errorMsg]="err"></app-form-error-msg>
+      }
+    </div>
+  }
+  <button
+    type="submit"
+    class="group flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-200/60 transition duration-200 hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-200/70 focus:outline-none focus:ring-4 focus:ring-blue-200 active:translate-y-0"
+  >
+    Create Account
+    <span class="transition-transform duration-200 group-hover:translate-x-1"> → </span>
+  </button>
+  <p class="pt-1 text-center text-sm text-gray-500">
+    Already have an account?
+    <button
+      type="button"
+      routerLink="/login"
+      class="font-semibold cursor-pointer text-blue-600 transition hover:text-blue-700 hover:underline"
+    >
+      Log In
+    </button>
+  </p>
+</form>
