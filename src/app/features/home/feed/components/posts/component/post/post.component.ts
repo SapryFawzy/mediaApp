@@ -17,6 +17,7 @@ import { PostsService } from '../../../../../../../core/Service/main/posts.servi
 import { RouterLink } from '@angular/router';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { IUserProfile } from '../../../../../../../core/models/iuser-profile.interface';
+import { Ilike } from '../../../../../../../core/models/ilike.interface';
 
 @Component({
   selector: 'app-post',
@@ -83,6 +84,9 @@ export class PostComponent implements OnInit {
   shareText: FormControl = new FormControl('');
   selectedPostToShare: WritableSignal<Post> = signal({} as Post);
   togglePostSharing: WritableSignal<boolean> = signal(false);
+
+  postLikeList: WritableSignal<Ilike[]> = signal([]);
+  showLikesList: WritableSignal<boolean> = signal(false);
 
   ngOnInit(): void {
     this.getUserProfileData();
@@ -223,6 +227,17 @@ export class PostComponent implements OnInit {
   likeAndUnlikeComment() {
     this.postsService.likeAndUlikePost(this.postData()._id).subscribe(() => {
       this.udatePosts.emit(true);
+    });
+  }
+
+  toggleLikesList() {
+    this.showLikesList.update((state) => !state);
+  }
+
+  getAllPostLikes(postId: string,limit:number = 20): void {
+    this.postsService.getAllPostLikes(postId,limit).subscribe((res: any) => {
+      this.postLikeList.set(res.data.likes);
+      this.showLikesList.set(true);
     });
   }
 }

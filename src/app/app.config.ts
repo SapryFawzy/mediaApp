@@ -22,7 +22,12 @@ export const appConfig: ApplicationConfig = {
       progressBar: true,
     }),
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes, withHashLocation(), withInMemoryScrolling(), withViewTransitions()),
+    provideRouter(
+      routes,
+      withHashLocation(),
+      withInMemoryScrolling({ scrollPositionRestoration: 'top' }),
+      withViewTransitions(),
+    ),
     provideHttpClient(
       withFetch(),
       withInterceptors([headerInterceptor, loaderInterceptor, errorInterceptor]),

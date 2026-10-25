@@ -1,5 +1,5 @@
 <section class="space-y-4">
-  <div class="mx-auto max-w-2xl">
+  <div class="mx-auto">
     <div
       class="overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-[0_8px_40px_-16px_rgba(0,0,0,0.12)]"
     >
@@ -15,19 +15,6 @@
           <h2 class="truncate text-base font-bold text-gray-900">{{ user().name }}</h2>
 
           <p class="mt-1 text-sm text-gray-400">Ready to share something?</p>
-        </div>
-
-        <div
-          class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 text-gray-400"
-        >
-          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 12h.01M12 12h.01M18 12h.01"
-            />
-          </svg>
         </div>
       </div>
 
@@ -236,7 +223,7 @@
   }
 
   @if (postesType() === 'feed') {
-    <app-user-posts></app-user-posts>
+    <app-feed-posts></app-feed-posts>
   } @else if (postesType() === 'myPosts') {
     <app-user-posts></app-user-posts>
   } @else if (postesType() === 'community') {

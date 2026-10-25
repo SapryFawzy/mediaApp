@@ -39,7 +39,7 @@ export class UserService {
   }
 
   getUserDetailProfileData(userId: string): Observable<object> {
-    return this.httpClient.get(environment.BASE_URL + `users/${userId}`);
+    return this.httpClient.get(environment.BASE_URL + `users/${userId}/profile`);
   }
 
   deleteCoverImage(): Observable<object> {
@@ -48,5 +48,9 @@ export class UserService {
 
   changePassword(body: any): Observable<object> {
     return this.httpClient.patch(environment.BASE_URL + `users/change-password`, body);
+  }
+
+  followAndUnFollow(id: string): Observable<object> {
+    return this.httpClient.put(environment.BASE_URL + `users/${id}/follow`, {});
   }
 }

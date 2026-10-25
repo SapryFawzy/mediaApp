@@ -87,4 +87,16 @@ export class PostsService {
       {},
     );
   }
+
+  getAllUserPosts(id: string): Observable<object> {
+    return this.httpClient.get(environment.BASE_URL + `users/${id}/posts`);
+  }
+
+  getAllPostLikes(id: string, limit: number): Observable<object> {
+    return this.httpClient.get(environment.BASE_URL + `posts/${id}/likes?page=1&limit=${limit}`);
+  }
+
+  getFeedPosts() {
+    return this.httpClient.get(environment.BASE_URL + `posts/feed?only=following&limit=20&page=1`);
+  }
 }

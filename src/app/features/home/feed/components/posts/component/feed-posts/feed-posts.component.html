@@ -1,0 +1,5 @@
+<div class="grid gap-4">
+  @for (post of posts(); track post.id) {
+    <app-post [postData]="post"></app-post>
+  }
+</div>

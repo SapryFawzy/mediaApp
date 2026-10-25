@@ -36,6 +36,14 @@ export class CommentsComponent implements OnInit {
   selectedImage: File | null = null;
   showEmojiPicker: WritableSignal<boolean> = signal(false);
   commentTextarea = viewChild<ElementRef<HTMLTextAreaElement>>('bindTextarea');
+
+  repalyImgToDisplay: WritableSignal<string | ArrayBuffer | null | undefined> = signal(null);
+  repalySelectedImage: File | null = null;
+  repaycommentTextarea = viewChild<ElementRef<HTMLTextAreaElement>>('replaybindTextarea');
+  replaycontant: FormControl = new FormControl('');
+  showrepalyEmojiPicker: WritableSignal<boolean> = signal(false);
+  showCreateReplayCommentError: WritableSignal<boolean> = signal(false);
+
   showPostEditor: WritableSignal<boolean> = signal(false);
   toggleCommentMenuFlag: WritableSignal<boolean> = signal(false);
   currentCommentId: WritableSignal<string> = signal('');
@@ -81,7 +89,7 @@ export class CommentsComponent implements OnInit {
     '🚀',
   ];
   showCreateCommentError: WritableSignal<boolean> = signal(false);
-  replays: WritableSignal<Icomment[]> = signal({} as Icomment[]);
+  replays: WritableSignal<Icomment[]> = signal([] as Icomment[]);
   showReplays: WritableSignal<boolean> = signal(false);
   activeCommentMenu = signal<string | null>(null);
   showUpdateCommentError: WritableSignal<boolean> = signal(false);
@@ -153,39 +161,57 @@ export class CommentsComponent implements OnInit {
     this.showEditCommentPopup.update((state) => !state);
   }
 
-  toggleEmojiPicker(): void {
-    this.showEmojiPicker.update((state) => !state);
+  toggleEmojiPicker(place: string = ''): void {
+    if (place === 'replay') this.showrepalyEmojiPicker.update((state) => !state);
+    else this.showEmojiPicker.update((state) => !state);
   }
 
-  insertEmoji(emoji: string): void {
-    const textarea = this.commentTextarea()?.nativeElement;
+  insertEmoji(emoji: string, place: string = ''): void {
+    let textarea;
+    let value;
+
+    if (place === 'replay') textarea = this.repaycommentTextarea()?.nativeElement;
+    else textarea = this.commentTextarea()?.nativeElement;
 
     if (!textarea) return;
 
-    const value = this.contant.value ?? '';
+    if (place === 'replay') value = this.replaycontant.value ?? '';
+    else value = this.contant.value ?? '';
+
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
 
     const newValue = value.slice(0, start) + emoji + value.slice(end);
 
-    this.contant.setValue(newValue);
-    this.showEmojiPicker.set(false);
-
+    if (place === 'replay') {
+      this.replaycontant.setValue(newValue);
+      this.showrepalyEmojiPicker.set(false);
+    } else {
+      this.contant.setValue(newValue);
+      this.showEmojiPicker.set(false);
+    }
     textarea.focus();
   }
 
-  onFileSelected(e: Event) {
+  onFileSelected(e: Event, place: string = '') {
     if (e.target) {
       const target = e.target as HTMLInputElement;
+      const fileReader = new FileReader();
       if (target.files && target.files.length) {
-        this.selectedImage = target.files[0];
-        const fileReader = new FileReader();
-        fileReader.readAsDataURL(this.selectedImage);
+        if (place === 'replay') {
+          this.repalySelectedImage = target.files[0];
+          fileReader.readAsDataURL(this.repalySelectedImage!);
+        } else {
+          this.selectedImage = target.files[0];
+          fileReader.readAsDataURL(this.selectedImage!);
+        }
+
         fileReader.onload = (e: ProgressEvent<FileReader>) => {
           if (this.showEditCommentPopup()) {
             this.editeImgToDisplay.set(e.target?.result);
           } else {
-            this.imgToDisplay.set(e.target?.result);
+            if (place === 'replay') this.repalyImgToDisplay.set(e.target?.result);
+            else this.imgToDisplay.set(e.target?.result);
           }
         };
       }
@@ -197,6 +223,7 @@ export class CommentsComponent implements OnInit {
       this.editeImgToDisplay.set(null);
     } else {
       this.imgToDisplay.set(null);
+      this.repalyImgToDisplay.set(null);
     }
     this.selectedImage = null;
   }
@@ -204,25 +231,52 @@ export class CommentsComponent implements OnInit {
   createComment(e: SubmitEvent, form: HTMLFormElement) {
     e.preventDefault();
     this.showCreateCommentError.set(false);
+
     const myFormData = new FormData();
+
     if (this.contant.value) {
       myFormData.append('content', this.contant.value);
     }
     if (this.selectedImage) {
       myFormData.append('image', this.selectedImage);
     }
-
     if (!this.contant.value && !this.selectedImage) {
       this.showCreateCommentError.set(true);
       return;
-    } else {
-      this.postsService.createCommentOnPost(this.postId(), myFormData).subscribe(() => {
-        this.getPostComment();
-        this.contant.setValue('');
-        form.reset();
-        this.cancelImg();
-      });
     }
+
+    this.postsService.createCommentOnPost(this.postId(), myFormData).subscribe(() => {
+      this.getPostComment();
+      this.contant.setValue('');
+      form.reset();
+      this.cancelImg();
+    });
+  }
+
+  createReplay(e: SubmitEvent, form: HTMLFormElement, commentId: string) {
+    e.preventDefault();
+    this.showCreateReplayCommentError.set(false);
+
+    const myFormData = new FormData();
+
+    if (this.replaycontant.value) {
+      myFormData.append('content', this.replaycontant.value);
+    }
+    if (this.repalySelectedImage) {
+      myFormData.append('image', this.repalySelectedImage);
+    }
+    if (!this.replaycontant.value && !this.repalySelectedImage) {
+      this.showCreateReplayCommentError.set(true);
+      return;
+    }
+
+    this.postsService.createCommentReplays(this.postId(), commentId, myFormData).subscribe(() => {
+      this.showReplays.set(false);
+      this.getPostComment();
+      this.replaycontant.setValue('');
+      form.reset();
+      this.cancelImg();
+    });
   }
 
   onFileSelectedInEdit(e: Event) {
@@ -246,7 +300,6 @@ export class CommentsComponent implements OnInit {
 
   deletePost(id: string) {
     this.postsService.deletePost(id).subscribe(() => {
-      // this.udatePosts.emit(true);
     });
   }
 

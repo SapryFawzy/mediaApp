@@ -17,6 +17,7 @@ import { Post } from '../../../../../core/models/post.interface';
 import { BookedPostsComponent } from './component/bookedPosts/booked-posts/booked-posts.component';
 import { FormErrorMsgComponent } from '../../../../../shared/ui/auth/form-error-msg/form-error-msg.component';
 import { IUserProfile } from '../../../../../core/models/iuser-profile.interface';
+import { FeedPostsComponent } from './component/feed-posts/feed-posts.component';
 
 @Component({
   selector: 'app-posts',
@@ -27,7 +28,8 @@ import { IUserProfile } from '../../../../../core/models/iuser-profile.interface
     ReactiveFormsModule,
     BookedPostsComponent,
     FormErrorMsgComponent,
-  ],
+    FeedPostsComponent
+],
   templateUrl: './posts.component.html',
   styleUrl: './posts.component.css',
 })

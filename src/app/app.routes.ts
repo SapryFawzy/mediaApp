@@ -37,7 +37,12 @@ export const routes: Routes = [
         title: 'Profile',
       },
       {
-        path: 'profile/:id',
+        path: 'suggests-frends',
+        loadComponent: () => import('./features/home/suggests-frends-page/suggests-frends-page.component').then((c) => c.SuggestsFrendsPageComponent),
+        title: 'suggests frends',
+      },
+      {
+        path: 'user-details/:id',
         loadComponent: () =>
           import('./features/home/user-details/user-details.component').then(
             (c) => c.UserDetailsComponent,
