@@ -12,8 +12,8 @@ import {
 import { Post } from '../../../../../../../core/models/post.interface';
 import { CommentsComponent } from '../comments/comments.component';
 import { FormatDatePipe } from '../../../../../../../shared/pipes/format-date-pipe';
-import { UserService } from '../../../../../../../core/auth/services/user/user.service';
-import { PostsService } from '../../../../../../../core/auth/services/main/posts.service';
+import { UserService } from '../../../../../../../core/Service/user/user.service';
+import { PostsService } from '../../../../../../../core/Service/main/posts.service';
 import { RouterLink } from '@angular/router';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { IUserProfile } from '../../../../../../../core/models/iuser-profile.interface';
@@ -32,8 +32,6 @@ export class PostComponent implements OnInit {
   user: WritableSignal<IUserProfile> = signal({} as IUserProfile);
   udatePosts = output<boolean>();
   showPostEditor: WritableSignal<boolean> = signal(false);
-  currntPost: WritableSignal<Post> = signal({} as Post);
-
   imgToDisplay: WritableSignal<string | ArrayBuffer | null | undefined> = signal(null);
   selectedImg: File | null = null;
   contant = new FormControl('');
@@ -82,6 +80,9 @@ export class PostComponent implements OnInit {
     '⭐',
     '🚀',
   ];
+  shareText: FormControl = new FormControl('');
+  selectedPostToShare: WritableSignal<Post> = signal({} as Post);
+  togglePostSharing: WritableSignal<boolean> = signal(false);
 
   ngOnInit(): void {
     this.getUserProfileData();
@@ -192,9 +193,36 @@ export class PostComponent implements OnInit {
     });
   }
 
+  sharePost() {
+    const formData = new FormData();
+    formData.append('body', this.shareText.value);
+    this.postsService.sharePost(this.selectedPostToShare()._id, formData).subscribe(() => {
+      this.closePostSharingPopup();
+      this.udatePosts.emit(true);
+    });
+  }
+
+  togglePostSharingPopup(postId: string) {
+    this.togglePostSharing.update((state) => !state);
+    this.postsService.getSinglePost(postId).subscribe((res: any) => {
+      this.selectedPostToShare.set(res.data.post);
+    });
+  }
+
+  closePostSharingPopup() {
+    this.togglePostSharing.set(false);
+    this.selectedPostToShare.set({} as Post);
+  }
+
   getUserProfileData() {
     this.userService.getUserProfileData().subscribe((res: any) => {
       this.user.set(res.data.user);
+    });
+  }
+
+  likeAndUnlikeComment() {
+    this.postsService.likeAndUlikePost(this.postData()._id).subscribe(() => {
+      this.udatePosts.emit(true);
     });
   }
 }

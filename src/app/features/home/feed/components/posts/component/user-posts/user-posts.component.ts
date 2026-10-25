@@ -1,6 +1,6 @@
 import { Component, inject, input, output, signal, WritableSignal } from '@angular/core';
 import { Post } from '../../../../../../../core/models/post.interface';
-import { PostsService } from '../../../../../../../core/auth/services/main/posts.service';
+import { PostsService } from '../../../../../../../core/Service/main/posts.service';
 import { PostComponent } from '../post/post.component';
 
 @Component({

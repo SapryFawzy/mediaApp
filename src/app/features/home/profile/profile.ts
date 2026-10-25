@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
-import { UserService } from '../../../core/auth/services/user/user.service';
+import { UserService } from '../../../core/Service/user/user.service';
 import { IUserProfile } from '../../../core/models/iuser-profile.interface';
-import { PostsService } from '../../../core/auth/services/main/posts.service';
+import { PostsService } from '../../../core/Service/main/posts.service';
 import { Post } from '../../../core/models/post.interface';
 import { PostComponent } from '../feed/components/posts/component/post/post.component';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';

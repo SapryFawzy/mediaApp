@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
-import { PostsService } from '../../../core/auth/services/main/posts.service';
-import { UserService } from '../../../core/auth/services/user/user.service';
+import { PostsService } from '../../../core/Service/main/posts.service';
+import { UserService } from '../../../core/Service/user/user.service';
 import { IUserProfile } from '../../../core/models/iuser-profile.interface';
 import { Post } from '../../../core/models/post.interface';
 import { ActivatedRoute } from '@angular/router';

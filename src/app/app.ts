@@ -1,7 +1,7 @@
 import { Component, computed, inject, Signal, signal, WritableSignal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { LoadingOverlayComponent } from './shared/directives/loading-overlay/loading-overlay.component';
-import { LoaderService } from './core/auth/services/interceptors/loader.service';
+import { LoaderService } from './core/Service/interceptors/loader.service';
 
 @Component({
   selector: 'app-root',

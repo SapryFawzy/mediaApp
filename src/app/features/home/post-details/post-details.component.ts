@@ -3,7 +3,7 @@ import { PostComponent } from '../feed/components/posts/component/post/post.comp
 import { Post } from '../../../core/models/post.interface';
 import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { PostsService } from '../../../core/auth/services/main/posts.service';
+import { PostsService } from '../../../core/Service/main/posts.service';
 
 @Component({
   selector: 'app-post-details',

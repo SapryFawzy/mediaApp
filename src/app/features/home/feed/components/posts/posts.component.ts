@@ -8,10 +8,10 @@ import {
   viewChild,
   WritableSignal,
 } from '@angular/core';
-import { PostsService } from '../../../../../core/auth/services/main/posts.service';
+import { PostsService } from '../../../../../core/Service/main/posts.service';
 import { UserPostsComponent } from './component/user-posts/user-posts.component';
 import { CommunityPostsComponent } from './component/community-posts/community-posts.component';
-import { UserService } from '../../../../../core/auth/services/user/user.service';
+import { UserService } from '../../../../../core/Service/user/user.service';
 import { FormControl, ReactiveFormsModule, ɵInternalFormsSharedModule } from '@angular/forms';
 import { Post } from '../../../../../core/models/post.interface';
 import { BookedPostsComponent } from './component/bookedPosts/booked-posts/booked-posts.component';

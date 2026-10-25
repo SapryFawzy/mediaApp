@@ -1,5 +1,5 @@
 import { Component, inject, signal, WritableSignal } from '@angular/core';
-import { UserService } from '../../../core/auth/services/user/user.service';
+import { UserService } from '../../../core/Service/user/user.service';
 import {
   FormBuilder,
   FormGroup,

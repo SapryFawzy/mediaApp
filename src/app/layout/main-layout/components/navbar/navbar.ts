@@ -1,5 +1,5 @@
 import { Component, inject, signal, WritableSignal } from '@angular/core';
-import { UserService } from '../../../../core/auth/services/user/user.service';
+import { UserService } from '../../../../core/Service/user/user.service';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { IUserProfile } from '../../../../core/models/iuser-profile.interface';
 

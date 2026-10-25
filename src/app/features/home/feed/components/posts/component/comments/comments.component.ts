@@ -8,10 +8,10 @@ import {
   viewChild,
   WritableSignal,
 } from '@angular/core';
-import { PostsService } from '../../../../../../../core/auth/services/main/posts.service';
+import { PostsService } from '../../../../../../../core/Service/main/posts.service';
 import { Icomment } from '../../../../../../../core/models/icomment.interface';
 import { FormatDatePipe } from '../../../../../../../shared/pipes/format-date-pipe';
-import { UserService } from '../../../../../../../core/auth/services/user/user.service';
+import { UserService } from '../../../../../../../core/Service/user/user.service';
 import { IUserProfile } from '../../../../../../../core/models/iuser-profile.interface';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FormErrorMsgComponent } from '../../../../../../../shared/ui/auth/form-error-msg/form-error-msg.component';
@@ -30,7 +30,9 @@ export class CommentsComponent implements OnInit {
   user: WritableSignal<WritableSignal<IUserProfile>> = signal(this.userService.user);
   noCommenting: WritableSignal<boolean> = signal(false);
   contant: FormControl = new FormControl('');
+  newContant: FormControl = new FormControl('');
   imgToDisplay: WritableSignal<string | ArrayBuffer | null | undefined> = signal(null);
+  editeImgToDisplay: WritableSignal<string | ArrayBuffer | null | undefined> = signal(null);
   selectedImage: File | null = null;
   showEmojiPicker: WritableSignal<boolean> = signal(false);
   commentTextarea = viewChild<ElementRef<HTMLTextAreaElement>>('bindTextarea');
@@ -82,6 +84,9 @@ export class CommentsComponent implements OnInit {
   replays: WritableSignal<Icomment[]> = signal({} as Icomment[]);
   showReplays: WritableSignal<boolean> = signal(false);
   activeCommentMenu = signal<string | null>(null);
+  showUpdateCommentError: WritableSignal<boolean> = signal(false);
+
+  showEditCommentPopup: WritableSignal<boolean> = signal(false);
 
   ngOnInit() {
     this.getPostComment();
@@ -109,28 +114,43 @@ export class CommentsComponent implements OnInit {
 
   updateComment(): void {
     this.toggleCommentMenuFlag.set(false);
-    this.showEditCommentPopup.set(true);
-    const text = this.editCommentText().trim();
-    const image = this.editCommentImage();
-
-    if (!text && !image) return;
+    if (this.showUpdateCommentError()) this.showUpdateCommentError.set(false);
 
     const formData = new FormData();
-    formData.append('content', text);
 
-    if (image) {
-      formData.append('image', image);
+    if (this.newContant.value) {
+      formData.append('content', this.newContant.value);
     }
 
-    this.isUpdatingComment.set(true);
+    if (this.selectedImage) {
+      formData.append('image', this.selectedImage);
+    }
 
+    if (!this.newContant.value && !this.selectedImage) {
+      this.showUpdateCommentError.set(true);
+      return;
+    } else {
+    }
     this.postsService
       .upDateComment(this.postId(), this.currentCommentId(), formData)
       .subscribe(() => {
         this.getPostComment();
-        this.isUpdatingComment.set(false);
         this.closeEditCommentPopup();
       });
+  }
+
+  closeEditCommentPopup(): void {
+    this.showEditCommentPopup.set(false);
+    this.resetEditCommentPopup();
+  }
+
+  private resetEditCommentPopup(): void {
+    this.contant.setValue('');
+    this.cancelImg();
+  }
+
+  toggleEditCommentPopup(): void {
+    this.showEditCommentPopup.update((state) => !state);
   }
 
   toggleEmojiPicker(): void {
@@ -162,14 +182,22 @@ export class CommentsComponent implements OnInit {
         const fileReader = new FileReader();
         fileReader.readAsDataURL(this.selectedImage);
         fileReader.onload = (e: ProgressEvent<FileReader>) => {
-          this.imgToDisplay.set(e.target?.result);
+          if (this.showEditCommentPopup()) {
+            this.editeImgToDisplay.set(e.target?.result);
+          } else {
+            this.imgToDisplay.set(e.target?.result);
+          }
         };
       }
     }
   }
 
   cancelImg() {
-    this.imgToDisplay.set(null);
+    if (this.showEditCommentPopup()) {
+      this.editeImgToDisplay.set(null);
+    } else {
+      this.imgToDisplay.set(null);
+    }
     this.selectedImage = null;
   }
 
@@ -212,7 +240,6 @@ export class CommentsComponent implements OnInit {
   }
 
   toggleCommentMenu(commentId: string) {
-    this.toggleCommentMenuFlag.set(false);
     this.currentCommentId.set(commentId);
     this.toggleCommentMenuFlag.update((state) => !state);
   }
@@ -258,70 +285,10 @@ export class CommentsComponent implements OnInit {
     this.cancelImg();
     this.contant = new FormControl('');
   }
-  ////////////////////////////////////////////////////
-  showEditCommentPopup = signal(false);
 
-  editCommentText = signal('');
-  editCommentImage = signal<File | null>(null);
-  editCommentImagePreview = signal<string | null>(null);
-
-  isUpdatingComment = signal(false);
-
-  private previewObjectUrl: string | null = null;
-
-  openEditCommentPopup(comment: { content: string; image?: string | null }): void {
-    this.resetEditCommentPopup();
-
-    this.editCommentText.set(comment.content);
-    this.editCommentImagePreview.set(comment.image ?? null);
-
-    this.showEditCommentPopup.set(true);
-  }
-
-  onEditCommentImageSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-      input.value = '';
-      return;
-    }
-
-    this.clearPreviewObjectUrl();
-
-    this.editCommentImage.set(file);
-
-    this.previewObjectUrl = URL.createObjectURL(file);
-    this.editCommentImagePreview.set(this.previewObjectUrl);
-  }
-
-  removeEditCommentImage(): void {
-    this.editCommentImage.set(null);
-    this.clearPreviewObjectUrl();
-    this.editCommentImagePreview.set(null);
-  }
-
-  closeEditCommentPopup(): void {
-    this.showEditCommentPopup.set(false);
-    this.resetEditCommentPopup();
-  }
-
-  private resetEditCommentPopup(): void {
-    this.editCommentText.set('');
-    this.editCommentImage.set(null);
-    this.editCommentImagePreview.set(null);
-
-    this.clearPreviewObjectUrl();
-
-    // Reset the native file input too, if you use a ViewChild for it.
-  }
-
-  private clearPreviewObjectUrl(): void {
-    if (this.previewObjectUrl) {
-      URL.revokeObjectURL(this.previewObjectUrl);
-      this.previewObjectUrl = null;
-    }
+  likeAndUnlikeComment(comentId: string) {
+    this.postsService.likeAndUlikeComment(this.postId(), comentId).subscribe(() => {
+      this.getPostComment();
+    });
   }
 }

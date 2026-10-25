@@ -1,7 +1,7 @@
 import { Component, inject, input, OnInit, output, signal, WritableSignal } from '@angular/core';
 import { PostComponent } from '../../post/post.component';
 import { Post } from '../../../../../../../../core/models/post.interface';
-import { PostsService } from '../../../../../../../../core/auth/services/main/posts.service';
+import { PostsService } from '../../../../../../../../core/Service/main/posts.service';
 
 @Component({
   selector: 'app-booked-posts',
