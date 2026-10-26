@@ -88,6 +88,8 @@ export class PostComponent implements OnInit {
   postLikeList: WritableSignal<Ilike[]> = signal([]);
   showLikesList: WritableSignal<boolean> = signal(false);
 
+  showLikeAnimation = signal(false);
+
   ngOnInit(): void {
     this.getUserProfileData();
   }
@@ -234,10 +236,22 @@ export class PostComponent implements OnInit {
     this.showLikesList.update((state) => !state);
   }
 
-  getAllPostLikes(postId: string,limit:number = 20): void {
-    this.postsService.getAllPostLikes(postId,limit).subscribe((res: any) => {
+  getAllPostLikes(postId: string, limit: number = 20): void {
+    this.postsService.getAllPostLikes(postId, limit).subscribe((res: any) => {
       this.postLikeList.set(res.data.likes);
       this.showLikesList.set(true);
     });
+  }
+
+  playLikeAnimation() {
+    this.showLikeAnimation.set(false);
+
+    requestAnimationFrame(() => {
+      this.showLikeAnimation.set(true);
+    });
+  }
+
+  onLikeAnimationEnd() {
+    this.showLikeAnimation.set(false);
   }
 }

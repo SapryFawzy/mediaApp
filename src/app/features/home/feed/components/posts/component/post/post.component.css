@@ -1,0 +1,33 @@
+.like-float {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  z-index: 20;
+  pointer-events: none;
+
+  font-size: 28px;
+  transform: translate(-50%, 0);
+  animation: like-float-up 850ms cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+}
+
+@keyframes like-float-up {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 10px) scale(0.3) rotate(-15deg);
+  }
+
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -5px) scale(1.2) rotate(8deg);
+  }
+
+  40% {
+    opacity: 1;
+    transform: translate(-50%, -15px) scale(1) rotate(-5deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-35%, -65px) scale(0.75) rotate(12deg);
+  }
+}

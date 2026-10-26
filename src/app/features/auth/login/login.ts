@@ -4,12 +4,11 @@ import { Router, RouterLink } from '@angular/router';
 import { initFlowbite } from 'flowbite';
 import { LoginService } from '../../../core/auth/services/auth/login.service';
 import { Ilogin } from './interface/ilogin.interface';
-import { LoadingOverlayComponent } from '../../../shared/directives/loading-overlay/loading-overlay.component';
 import { FormErrorMsgComponent } from '../../../shared/ui/auth/form-error-msg/form-error-msg.component';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, RouterLink, LoadingOverlayComponent, FormErrorMsgComponent],
+  imports: [ReactiveFormsModule, RouterLink, FormErrorMsgComponent],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })

@@ -5,7 +5,7 @@ import { LoaderService } from '../../Service/interceptors/loader.service';
 
 export const loaderInterceptor: HttpInterceptorFn = (req, next) => {
   const loaderService = inject(LoaderService);
-  if (!req.url.includes('search')) {
+  if (!req.url.includes('search') && !req.url.includes('like') && !req.url.includes('users')) {
     loaderService.loading.set(true);
   }
   return next(req).pipe(
