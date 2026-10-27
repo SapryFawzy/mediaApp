@@ -13,7 +13,7 @@ import { Icomment } from '../../../../../../../core/models/icomment.interface';
 import { FormatDatePipe } from '../../../../../../../shared/pipes/format-date-pipe';
 import { UserService } from '../../../../../../../core/Service/user/user.service';
 import { IUserProfile } from '../../../../../../../core/models/iuser-profile.interface';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormErrorMsgComponent } from '../../../../../../../shared/ui/auth/form-error-msg/form-error-msg.component';
 
 @Component({
@@ -29,8 +29,8 @@ export class CommentsComponent implements OnInit {
   postId = input('');
   user: WritableSignal<WritableSignal<IUserProfile>> = signal(this.userService.user);
   noCommenting: WritableSignal<boolean> = signal(false);
-  contant: FormControl = new FormControl('');
-  newContant: FormControl = new FormControl('');
+  contant: FormControl = new FormControl('', [Validators.minLength(2)]);
+  newContant: FormControl = new FormControl('', [Validators.minLength(2)]);
   imgToDisplay: WritableSignal<string | ArrayBuffer | null | undefined> = signal(null);
   editeImgToDisplay: WritableSignal<string | ArrayBuffer | null | undefined> = signal(null);
   selectedImage: File | null = null;
@@ -40,7 +40,7 @@ export class CommentsComponent implements OnInit {
   repalyImgToDisplay: WritableSignal<string | ArrayBuffer | null | undefined> = signal(null);
   repalySelectedImage: File | null = null;
   repaycommentTextarea = viewChild<ElementRef<HTMLTextAreaElement>>('replaybindTextarea');
-  replaycontant: FormControl = new FormControl('');
+  replaycontant: FormControl = new FormControl('', [Validators.minLength(2)]);
   showrepalyEmojiPicker: WritableSignal<boolean> = signal(false);
   showCreateReplayCommentError: WritableSignal<boolean> = signal(false);
 
@@ -299,8 +299,7 @@ export class CommentsComponent implements OnInit {
   }
 
   deletePost(id: string) {
-    this.postsService.deletePost(id).subscribe(() => {
-    });
+    this.postsService.deletePost(id).subscribe(() => {});
   }
 
   editPost(id: string, form: HTMLFormElement, e: SubmitEvent) {

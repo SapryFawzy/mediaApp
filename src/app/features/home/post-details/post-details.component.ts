@@ -16,12 +16,10 @@ export class PostDetailsComponent {
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly postsService = inject(PostsService);
   post: WritableSignal<Post> = signal({} as Post);
-  udatePosts = output<boolean>();
   postId: WritableSignal<string> = signal('');
 
   ngOnInit(): void {
     this.getPostDetails();
-    console.log(this.postId());
   }
 
   getPostDetails() {
@@ -41,7 +39,7 @@ export class PostDetailsComponent {
   }
 
   updatePosts() {
-    this.udatePosts.emit(true);
+    this.getPostDetails();
   }
 
   goBack() {

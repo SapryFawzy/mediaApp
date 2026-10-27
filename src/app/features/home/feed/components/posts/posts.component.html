@@ -6,13 +6,13 @@
       <!-- Card Header -->
       <div class="flex items-center gap-3 border-b border-gray-100 px-6 py-5">
         <img
-          [src]="user().photo"
-          [alt]="user().name"
+          [src]="user()().photo"
+          [alt]="user()().name"
           class="h-14 w-14 rounded-full border-2 border-white object-cover shadow-md ring-2 ring-emerald-100"
         />
 
         <div class="min-w-0 flex-1">
-          <h2 class="truncate text-base font-bold text-gray-900">{{ user().name }}</h2>
+          <h2 class="truncate text-base font-bold text-gray-900">{{ user()().name }}</h2>
 
           <p class="mt-1 text-sm text-gray-400">Ready to share something?</p>
         </div>
@@ -43,7 +43,7 @@
         <!-- Content -->
         <div>
           <label for="content" class="mb-2 block text-sm font-semibold text-gray-700">
-            What's on your mind, {{ user().name }}?
+            What's on your mind, {{ user()().name }}?
           </label>
 
           <textarea

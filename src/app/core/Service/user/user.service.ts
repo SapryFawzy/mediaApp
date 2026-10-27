@@ -1,5 +1,4 @@
 import { inject, Injectable, signal, WritableSignal } from '@angular/core';
-// import { Iuser } from '../../../models/iuser.interface';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';

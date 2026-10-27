@@ -91,7 +91,7 @@
                 <span>Save post</span>
               </button>
 
-              @if (postData().user._id === user()._id) {
+              @if (postData().user._id === user()()._id) {
                 <button
                   type="button"
                   (click)="showPostEditor.set(true); togglePostMenuFlag.set(false); getPostData()"
@@ -391,8 +391,8 @@
         >
           <div class="relative shrink-0">
             <img
-              [src]="user().photo"
-              [alt]="user().name"
+              [src]="user()().photo"
+              [alt]="user()().name"
               class="h-12 w-12 rounded-full border-2 border-white object-cover shadow-sm ring-2 ring-blue-100 sm:h-14 sm:w-14"
             />
             <span
@@ -402,7 +402,7 @@
 
           <div class="min-w-0 flex-1">
             <h2 class="truncate text-base font-bold text-slate-900 sm:text-lg">
-              {{ user().name }}
+              {{ user()().name }}
             </h2>
             <p class="mt-1 text-xs text-slate-500 sm:text-sm">
               Share your thoughts with your community
@@ -451,7 +451,7 @@
             <div>
               <div class="mb-2 flex items-center justify-between gap-3">
                 <label for="content" class="block text-sm font-bold text-slate-800">
-                  What's on your mind, {{ user().name }}?
+                  What's on your mind, {{ user()().name }}?
                 </label>
 
                 <span class="shrink-0 text-xs font-medium text-slate-400">
@@ -763,7 +763,7 @@
               <a
                 class="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-100"
                 [routerLink]="
-                  user()._id === userr._id ? ['/profile'] : ['/user-details/' + userr._id]
+                  user()()._id === userr._id ? ['/profile'] : ['/user-details/' + userr._id]
                 "
                 data-discover="true"
                 ><img

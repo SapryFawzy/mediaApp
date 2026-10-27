@@ -3,7 +3,6 @@ import {
   ElementRef,
   inject,
   input,
-  OnInit,
   output,
   signal,
   viewChild,
@@ -25,12 +24,12 @@ import { Ilike } from '../../../../../../../core/models/ilike.interface';
   templateUrl: './post.component.html',
   styleUrl: './post.component.css',
 })
-export class PostComponent implements OnInit {
+export class PostComponent {
   private readonly userService = inject(UserService);
   private readonly postsService = inject(PostsService);
   postData = input({} as Post);
   togglePostMenuFlag: WritableSignal<boolean> = signal(false);
-  user: WritableSignal<IUserProfile> = signal({} as IUserProfile);
+  user: WritableSignal<WritableSignal<IUserProfile>> = signal(this.userService.user);
   udatePosts = output<boolean>();
   showPostEditor: WritableSignal<boolean> = signal(false);
   imgToDisplay: WritableSignal<string | ArrayBuffer | null | undefined> = signal(null);
@@ -89,10 +88,6 @@ export class PostComponent implements OnInit {
   showLikesList: WritableSignal<boolean> = signal(false);
 
   showLikeAnimation = signal(false);
-
-  ngOnInit(): void {
-    this.getUserProfileData();
-  }
 
   toggleEmojiPicker(): void {
     this.showEmojiPicker.update((state) => !state);
@@ -218,12 +213,6 @@ export class PostComponent implements OnInit {
   closePostSharingPopup() {
     this.togglePostSharing.set(false);
     this.selectedPostToShare.set({} as Post);
-  }
-
-  getUserProfileData() {
-    this.userService.getUserProfileData().subscribe((res: any) => {
-      this.user.set(res.data.user);
-    });
   }
 
   likeAndUnlikeComment() {

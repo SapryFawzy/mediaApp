@@ -17,7 +17,7 @@ type fileDisplayer = string | ArrayBuffer | null | undefined;
 export class Profile implements OnInit {
   private readonly userService = inject(UserService);
   private readonly postsService = inject(PostsService);
-  userProfileData: WritableSignal<IUserProfile> = signal({} as IUserProfile);
+  userProfileData: WritableSignal<WritableSignal<IUserProfile>> = signal(this.userService.user);
   userposts: WritableSignal<Post[]> = signal([]);
   postCatagory: WritableSignal<string> = signal('userPosts');
   savedPosts: WritableSignal<Post[]> = signal([]);
@@ -29,7 +29,6 @@ export class Profile implements OnInit {
   currntImage: WritableSignal<string> = signal('');
 
   ngOnInit(): void {
-    this.getUserProfileData();
     this.getUserPosts();
     this.getSavedPosts();
   }
@@ -47,9 +46,7 @@ export class Profile implements OnInit {
   }
 
   getUserProfileData() {
-    this.userService.getUserProfileData().subscribe((res: any) => {
-      this.userProfileData.set(res.data.user);
-    });
+    this.userService.updateUserData();
   }
 
   selectImg(e: Event): File | null {

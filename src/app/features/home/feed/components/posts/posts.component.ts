@@ -28,8 +28,8 @@ import { FeedPostsComponent } from './component/feed-posts/feed-posts.component'
     ReactiveFormsModule,
     BookedPostsComponent,
     FormErrorMsgComponent,
-    FeedPostsComponent
-],
+    FeedPostsComponent,
+  ],
   templateUrl: './posts.component.html',
   styleUrl: './posts.component.css',
 })
@@ -37,7 +37,7 @@ export class PostsComponent {
   private readonly postsService = inject(PostsService);
   private readonly userService = inject(UserService);
   postesType: InputSignal<string> = input('');
-  user: WritableSignal<IUserProfile> = signal({} as IUserProfile);
+  user: WritableSignal<WritableSignal<IUserProfile>> = signal(this.userService.user);
   imgToDisplay: WritableSignal<string | ArrayBuffer | null | undefined> = signal(null);
   selectedImg!: File;
   contant = new FormControl('');
@@ -90,7 +90,6 @@ export class PostsComponent {
 
   ngOnInit(): void {
     this.getAllPosts();
-    this.getUserProfileData();
   }
 
   toggleEmojiPicker(): void {
@@ -112,12 +111,6 @@ export class PostsComponent {
     this.showEmojiPicker.set(false);
 
     textarea.focus();
-  }
-
-  getUserProfileData() {
-    this.userService.getUserProfileData().subscribe((res: any) => {
-      this.user.set(res.data.user);
-    });
   }
 
   getAllPosts() {

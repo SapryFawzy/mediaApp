@@ -10,7 +10,7 @@ import { CommuntyService } from '../../../../core/Service/main/communty.service'
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
-export class Navbar implements OnInit{
+export class Navbar implements OnInit {
   private readonly userService = inject(UserService);
   private readonly communtyService = inject(CommuntyService);
   private readonly router = inject(Router);
