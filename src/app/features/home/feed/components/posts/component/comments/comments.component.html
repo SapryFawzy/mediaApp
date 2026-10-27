@@ -216,6 +216,13 @@
                   [errorMsg]="'you need to add image or text in your comment !'"
                 ></app-form-error-msg>
               </div>
+              @if (contant.invalid) {
+                <div class="border-red-400 border rounded-2xl mt-2 py-2 px-4">
+                  <app-form-error-msg
+                    [errorMsg]="'comment should be in less 2 chars !'"
+                  ></app-form-error-msg>
+                </div>
+              }
             }
           </form>
         }
@@ -435,7 +442,7 @@
                       <button
                         type="submit"
                         [class]="
-                          !repalySelectedImage && !this.replaycontant.value?.trim()
+                          !repalySelectedImage && newContant.invalid && !this.replaycontant.value?.trim()
                             ? 'cursor-not-allowed bg-[#9ec5ff] opacity-100'
                             : 'bg-[#1877f2] hover:bg-[#166fe5]'
                         "
@@ -495,6 +502,13 @@
                           [errorMsg]="'you need to add image or text in your comment !'"
                         ></app-form-error-msg>
                       </div>
+                      @if (newContant.invalid) {
+                        <div class="border-red-400 border rounded-2xl mt-2 py-2 px-4">
+                          <app-form-error-msg
+                            [errorMsg]="'comment should be in less 2 chars !'"
+                          ></app-form-error-msg>
+                        </div>
+                      }
                     }
                   </div>
                 </form>
@@ -607,7 +621,7 @@
           <button
             type="submit"
             [class]="
-              !selectedImage && !this.contant.value?.trim()
+              !selectedImage && contant.invalid && !this.contant.value?.trim()
                 ? 'cursor-not-allowed bg-[#9ec5ff] opacity-100'
                 : 'bg-[#1877f2] hover:bg-[#166fe5]'
             "
@@ -662,6 +676,13 @@
               [errorMsg]="'you need to add image or text in your comment !'"
             ></app-form-error-msg>
           </div>
+          @if (contant.invalid) {
+            <div class="border-red-400 border rounded-2xl mt-2 py-2 px-4">
+              <app-form-error-msg
+                [errorMsg]="'comment should be in less 2 chars !'"
+              ></app-form-error-msg>
+            </div>
+          }
         }
       </div>
     </form>

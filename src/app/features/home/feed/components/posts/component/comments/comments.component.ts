@@ -152,8 +152,8 @@ export class CommentsComponent implements OnInit {
     this.resetEditCommentPopup();
   }
 
-  private resetEditCommentPopup(): void {
-    this.contant.setValue('');
+  resetEditCommentPopup(): void {
+    this.newContant.reset('');
     this.cancelImg();
   }
 
@@ -225,7 +225,8 @@ export class CommentsComponent implements OnInit {
       this.imgToDisplay.set(null);
       this.repalyImgToDisplay.set(null);
     }
-    this.selectedImage = null;
+    if (this.selectedImage) this.selectedImage = null;
+    if (this.repalySelectedImage) this.repalySelectedImage = null;
   }
 
   createComment(e: SubmitEvent, form: HTMLFormElement) {
@@ -234,13 +235,13 @@ export class CommentsComponent implements OnInit {
 
     const myFormData = new FormData();
 
-    if (this.contant.value) {
+    if (this.contant.value && this.contant.valid) {
       myFormData.append('content', this.contant.value);
     }
     if (this.selectedImage) {
       myFormData.append('image', this.selectedImage);
     }
-    if (!this.contant.value && !this.selectedImage) {
+    if (!this.contant.value && this.contant.valid && !this.selectedImage) {
       this.showCreateCommentError.set(true);
       return;
     }
@@ -259,13 +260,13 @@ export class CommentsComponent implements OnInit {
 
     const myFormData = new FormData();
 
-    if (this.replaycontant.value) {
+    if (this.replaycontant.value && this.replaycontant.valid) {
       myFormData.append('content', this.replaycontant.value);
     }
     if (this.repalySelectedImage) {
       myFormData.append('image', this.repalySelectedImage);
     }
-    if (!this.replaycontant.value && !this.repalySelectedImage) {
+    if (!this.replaycontant.value && this.replaycontant.invalid && !this.repalySelectedImage) {
       this.showCreateReplayCommentError.set(true);
       return;
     }
@@ -310,14 +311,16 @@ export class CommentsComponent implements OnInit {
     if (this.selectedImage) {
       myformData.append('image', this.selectedImage);
     }
-    if (this.contant.value) {
+    if (this.contant.value && this.contant.valid) {
       myformData.append('body', this.contant.value);
-    } else {
-      myformData.append('body', '');
+    }
+
+    if (!this.contant.value && this.contant.invalid && !this.selectedImage) {
+      this.showCreateCommentError.set(true);
+      return;
     }
 
     this.postsService.editePost(id, myformData).subscribe(() => {
-      // this.udatePosts.emit(true);
       form.reset();
       this.closeCommentEditor();
     });
