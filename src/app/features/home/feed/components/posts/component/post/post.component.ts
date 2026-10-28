@@ -243,4 +243,11 @@ export class PostComponent {
   onLikeAnimationEnd() {
     this.showLikeAnimation.set(false);
   }
+
+  isLiked(postLikes: string[]): boolean {
+    for (let i = 0; i < postLikes.length; i++) {
+      if (this.user()()._id === postLikes[i]) return true;
+    }
+    return false;
+  }
 }
