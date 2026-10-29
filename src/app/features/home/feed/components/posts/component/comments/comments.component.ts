@@ -1,6 +1,7 @@
 import {
   Component,
   ElementRef,
+  HostListener,
   inject,
   input,
   OnInit,
@@ -8,16 +9,17 @@ import {
   viewChild,
   WritableSignal,
 } from '@angular/core';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PostsService } from '../../../../../../../core/Service/main/posts.service';
 import { Icomment } from '../../../../../../../core/models/icomment.interface';
-import { FormatDatePipe } from '../../../../../../../shared/pipes/format-date-pipe';
-import { UserService } from '../../../../../../../core/Service/user/user.service';
 import { IUserProfile } from '../../../../../../../core/models/iuser-profile.interface';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { UserService } from '../../../../../../../core/Service/user/user.service';
+import { FormatDatePipe } from '../../../../../../../shared/pipes/format-date-pipe';
 import { FormErrorMsgComponent } from '../../../../../../../shared/ui/auth/form-error-msg/form-error-msg.component';
 
 @Component({
   selector: 'app-comments',
+  standalone: true,
   imports: [FormatDatePipe, ReactiveFormsModule, FormErrorMsgComponent],
   templateUrl: './comments.component.html',
   styleUrl: './comments.component.css',
@@ -25,325 +27,356 @@ import { FormErrorMsgComponent } from '../../../../../../../shared/ui/auth/form-
 export class CommentsComponent implements OnInit {
   private readonly postsService = inject(PostsService);
   private readonly userService = inject(UserService);
+
   comments: WritableSignal<Icomment[]> = signal([]);
   postId = input('');
   user: WritableSignal<WritableSignal<IUserProfile>> = signal(this.userService.user);
-  noCommenting: WritableSignal<boolean> = signal(false);
-  contant: FormControl = new FormControl('', [Validators.minLength(2)]);
-  newContant: FormControl = new FormControl('', [Validators.minLength(2)]);
+  noCommenting = signal(false);
+
+  contant = new FormControl('', [Validators.minLength(2)]);
+  newContant = new FormControl('', [Validators.minLength(2)]);
+  replaycontant = new FormControl('', [Validators.minLength(2)]);
+
   imgToDisplay: WritableSignal<string | ArrayBuffer | null | undefined> = signal(null);
   editeImgToDisplay: WritableSignal<string | ArrayBuffer | null | undefined> = signal(null);
-  selectedImage: File | null = null;
-  showEmojiPicker: WritableSignal<boolean> = signal(false);
-  commentTextarea = viewChild<ElementRef<HTMLTextAreaElement>>('bindTextarea');
-
   repalyImgToDisplay: WritableSignal<string | ArrayBuffer | null | undefined> = signal(null);
+
+  selectedImage: File | null = null;
   repalySelectedImage: File | null = null;
+  removeOriginalEditImage = signal(false);
+
+  showEmojiPicker = signal(false);
+  showrepalyEmojiPicker = signal(false);
+  commentTextarea = viewChild<ElementRef<HTMLTextAreaElement>>('bindTextarea');
   repaycommentTextarea = viewChild<ElementRef<HTMLTextAreaElement>>('replaybindTextarea');
-  replaycontant: FormControl = new FormControl('', [Validators.minLength(2)]);
-  showrepalyEmojiPicker: WritableSignal<boolean> = signal(false);
-  showCreateReplayCommentError: WritableSignal<boolean> = signal(false);
 
-  showPostEditor: WritableSignal<boolean> = signal(false);
-  toggleCommentMenuFlag: WritableSignal<boolean> = signal(false);
+  showPostEditor = signal(false);
+  showEditCommentPopup = signal(false);
+  toggleCommentMenuFlag = signal(false); // kept for compatibility with any existing template bindings
   currentCommentId: WritableSignal<string> = signal('');
-  emojis: string[] = [
-    '😀',
-    '😂',
-    '😍',
-    '🥰',
-    '😎',
-    '🤩',
-    '😊',
-    '😉',
-    '😭',
-    '😡',
-    '🤔',
-    '😴',
-    '🥳',
-    '🤗',
-    '😇',
-    '❤️',
-    '🧡',
-    '💛',
-    '💚',
-    '💙',
-    '💜',
-    '🖤',
-    '🤍',
-    '🔥',
-    '✨',
-    '🎉',
-    '💯',
-    '👏',
-    '🙌',
-    '👍',
-    '👎',
-    '💪',
-    '🙏',
-    '💖',
-    '💕',
-    '💔',
-    '🌹',
-    '⭐',
-    '🚀',
-  ];
-  showCreateCommentError: WritableSignal<boolean> = signal(false);
-  replays: WritableSignal<Icomment[]> = signal([] as Icomment[]);
-  showReplays: WritableSignal<boolean> = signal(false);
   activeCommentMenu = signal<string | null>(null);
-  showUpdateCommentError: WritableSignal<boolean> = signal(false);
 
-  showEditCommentPopup: WritableSignal<boolean> = signal(false);
+  showCreateCommentError = signal(false);
+  showCreateReplayCommentError = signal(false);
+  showUpdateCommentError = signal(false);
+  replays: WritableSignal<Icomment[]> = signal([]);
+  showReplays = signal(false);
 
-  ngOnInit() {
+  emojis: string[] = [
+    '😀', '😂', '😍', '🥰', '😎', '🤩', '😊', '😉', '😭', '😡',
+    '🤔', '😴', '🥳', '🤗', '😇', '❤️', '🧡', '💛', '💚', '💙',
+    '💜', '🖤', '🤍', '🔥', '✨', '🎉', '💯', '👏', '🙌', '👍',
+    '👎', '💪', '🙏', '💖', '💕', '💔', '🌹', '⭐', '🚀',
+  ];
+
+  ngOnInit(): void {
     this.getPostComment();
   }
 
   getPostComment(): void {
-    this.postsService.getPostComment(this.postId()).subscribe((res: any) => {
-      this.comments.set(res.data.comments);
+    this.postsService.getPostComment(this.postId()).subscribe({
+      next: (res: any) => this.comments.set(res.data.comments ?? []),
+      error: (error) => console.error('Failed to load comments:', error),
     });
   }
 
   getCommentsReplays(commentId: string): void {
-    this.showReplays.update((vale) => !vale);
-    if (!this.showReplays()) return;
-    this.postsService.getCommentReplays(this.postId(), commentId).subscribe((res: any) => {
-      this.replays.set(res.data.replies);
-    });
-  }
-
-  deleteComment(commentId: string): void {
-    this.postsService.deleteComment(this.postId(), commentId).subscribe(() => {
-      this.getPostComment();
-    });
-  }
-
-  updateComment(): void {
-    this.toggleCommentMenuFlag.set(false);
-    if (this.showUpdateCommentError()) this.showUpdateCommentError.set(false);
-
-    const formData = new FormData();
-
-    if (this.newContant.value) {
-      formData.append('content', this.newContant.value);
-    }
-
-    if (this.selectedImage) {
-      formData.append('image', this.selectedImage);
-    }
-
-    if (!this.newContant.value && !this.selectedImage) {
-      this.showUpdateCommentError.set(true);
+    if (this.showReplays()) {
+      this.showReplays.set(false);
       return;
-    } else {
     }
-    this.postsService
-      .upDateComment(this.postId(), this.currentCommentId(), formData)
-      .subscribe(() => {
-        this.getPostComment();
-        this.closeEditCommentPopup();
-      });
+
+    this.showReplays.set(true);
+    this.postsService.getCommentReplays(this.postId(), commentId).subscribe({
+      next: (res: any) => this.replays.set(res.data.replies ?? []),
+      error: (error) => console.error('Failed to load replies:', error),
+    });
+  }
+
+  toggleCommentMenu(commentId: string): void {
+    this.currentCommentId.set(commentId);
+    this.activeCommentMenu.update((currentId) => currentId === commentId ? null : commentId);
+    this.toggleCommentMenuFlag.set(this.activeCommentMenu() !== null);
+  }
+
+  closeCommentMenu(): void {
+    this.activeCommentMenu.set(null);
+    this.toggleCommentMenuFlag.set(false);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    if (!target.closest('[data-comment-menu-root="true"]')) {
+      this.closeCommentMenu();
+    }
+
+    if (!target.closest('[data-comment-mention-root="true"]')) {
+      this.showEmojiPicker.set(false);
+      this.showrepalyEmojiPicker.set(false);
+    }
+  }
+
+  openEditCommentPopup(commentId: string, content = '', image: string | null | undefined = null): void {
+    this.closeCommentMenu();
+    this.currentCommentId.set(commentId);
+    this.newContant.setValue(content ?? '');
+    this.newContant.markAsPristine();
+    this.newContant.markAsUntouched();
+    this.selectedImage = null;
+    this.editeImgToDisplay.set(image);
+    this.removeOriginalEditImage.set(false);
+    this.showUpdateCommentError.set(false);
+    this.showEditCommentPopup.set(true);
   }
 
   closeEditCommentPopup(): void {
     this.showEditCommentPopup.set(false);
-    this.resetEditCommentPopup();
-  }
-
-  resetEditCommentPopup(): void {
     this.newContant.reset('');
-    this.cancelImg();
+    this.selectedImage = null;
+    this.editeImgToDisplay.set(null);
+    this.removeOriginalEditImage.set(false);
+    this.showUpdateCommentError.set(false);
   }
 
-  toggleEditCommentPopup(): void {
-    this.showEditCommentPopup.update((state) => !state);
+  toggleEditCommentPopup(content = '', image: string | null = null): void {
+    // Compatibility helper for older template calls. Prefer openEditCommentPopup().
+    if (this.showEditCommentPopup()) {
+      this.closeEditCommentPopup();
+    } else {
+      this.openEditCommentPopup(this.currentCommentId(), content, image);
+    }
   }
 
-  toggleEmojiPicker(place: string = ''): void {
-    if (place === 'replay') this.showrepalyEmojiPicker.update((state) => !state);
-    else this.showEmojiPicker.update((state) => !state);
+  updateComment(): void {
+    const content = String(this.newContant.value ?? '').trim();
+    const hasNewImage = !!this.selectedImage;
+    const hasExistingImage = !!this.editeImgToDisplay() && !this.removeOriginalEditImage();
+
+    this.showUpdateCommentError.set(false);
+    if (content.length > 0 && this.newContant.invalid) {
+      this.showUpdateCommentError.set(true);
+      return;
+    }
+    if (!content && !hasNewImage && !hasExistingImage) {
+      this.showUpdateCommentError.set(true);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('content', content);
+    if (this.selectedImage) {
+      formData.append('image', this.selectedImage);
+    } else if (this.removeOriginalEditImage()) {
+      // The API needs to accept an empty image field for removal of an existing image.
+      formData.append('image', '');
+    }
+
+    this.postsService.upDateComment(this.postId(), this.currentCommentId(), formData).subscribe({
+      next: () => {
+        this.closeEditCommentPopup();
+        this.getPostComment();
+        if (this.showReplays()) {
+          this.postsService.getCommentReplays(this.postId(), this.currentCommentId()).subscribe({
+            next: (res: any) => this.replays.set(res.data.replies ?? []),
+            error: () => undefined,
+          });
+        }
+      },
+      error: (error) => {
+        console.error('Failed to update comment:', error);
+        this.showUpdateCommentError.set(true);
+      },
+    });
   }
 
-  insertEmoji(emoji: string, place: string = ''): void {
-    let textarea;
-    let value;
+  deleteComment(commentId: string): void {
+    this.closeCommentMenu();
+    this.postsService.deleteComment(this.postId(), commentId).subscribe({
+      next: () => {
+        this.getPostComment();
+        this.replays.update((items) => items.filter((item) => item._id !== commentId));
+      },
+      error: (error) => console.error('Failed to delete comment:', error),
+    });
+  }
 
-    if (place === 'replay') textarea = this.repaycommentTextarea()?.nativeElement;
-    else textarea = this.commentTextarea()?.nativeElement;
+  likeAndUnlikeComment(commentId: string): void {
+    this.postsService.likeAndUlikeComment(this.postId(), commentId).subscribe({
+      next: () => this.getPostComment(),
+      error: (error) => console.error('Failed to like comment:', error),
+    });
+  }
 
+  toggleEmojiPicker(place = ''): void {
+    if (place === 'replay') {
+      this.showrepalyEmojiPicker.update((state) => !state);
+      this.showEmojiPicker.set(false);
+    } else {
+      this.showEmojiPicker.update((state) => !state);
+      this.showrepalyEmojiPicker.set(false);
+    }
+  }
+
+  insertEmoji(emoji: string, place = ''): void {
+    const textarea = place === 'replay'
+      ? this.repaycommentTextarea()?.nativeElement
+      : this.commentTextarea()?.nativeElement;
     if (!textarea) return;
 
-    if (place === 'replay') value = this.replaycontant.value ?? '';
-    else value = this.contant.value ?? '';
-
+    const control = place === 'replay' ? this.replaycontant : this.contant;
+    const value = String(control.value ?? '');
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
+    const nextValue = value.slice(0, start) + emoji + value.slice(end);
 
-    const newValue = value.slice(0, start) + emoji + value.slice(end);
+    control.setValue(nextValue);
+    if (place === 'replay') this.showrepalyEmojiPicker.set(false);
+    else this.showEmojiPicker.set(false);
 
-    if (place === 'replay') {
-      this.replaycontant.setValue(newValue);
-      this.showrepalyEmojiPicker.set(false);
-    } else {
-      this.contant.setValue(newValue);
-      this.showEmojiPicker.set(false);
-    }
     textarea.focus();
+    const cursor = start + emoji.length;
+    textarea.setSelectionRange(cursor, cursor);
   }
 
-  onFileSelected(e: Event, place: string = '') {
-    if (e.target) {
-      const target = e.target as HTMLInputElement;
-      const fileReader = new FileReader();
-      if (target.files && target.files.length) {
-        if (place === 'replay') {
-          this.repalySelectedImage = target.files[0];
-          fileReader.readAsDataURL(this.repalySelectedImage!);
-        } else {
-          this.selectedImage = target.files[0];
-          fileReader.readAsDataURL(this.selectedImage!);
-        }
+  onFileSelected(event: Event, place = ''): void {
+    const target = event.target as HTMLInputElement;
+    const file = target.files?.[0];
+    if (!file) return;
 
-        fileReader.onload = (e: ProgressEvent<FileReader>) => {
-          if (this.showEditCommentPopup()) {
-            this.editeImgToDisplay.set(e.target?.result);
-          } else {
-            if (place === 'replay') this.repalyImgToDisplay.set(e.target?.result);
-            else this.imgToDisplay.set(e.target?.result);
-          }
-        };
-      }
+    if (this.showEditCommentPopup()) {
+      this.selectedImage = file;
+      this.removeOriginalEditImage.set(false);
+      const reader = new FileReader();
+      reader.onload = () => this.editeImgToDisplay.set(reader.result);
+      reader.readAsDataURL(file);
+    } else if (place === 'replay') {
+      this.repalySelectedImage = file;
+      const reader = new FileReader();
+      reader.onload = () => this.repalyImgToDisplay.set(reader.result);
+      reader.readAsDataURL(file);
+    } else {
+      this.selectedImage = file;
+      const reader = new FileReader();
+      reader.onload = () => this.imgToDisplay.set(reader.result);
+      reader.readAsDataURL(file);
     }
+    target.value = '';
   }
 
-  cancelImg() {
+  onFileSelectedInEdit(event: Event): void {
+    this.onFileSelected(event);
+  }
+
+  cancelImg(): void {
     if (this.showEditCommentPopup()) {
       this.editeImgToDisplay.set(null);
-    } else {
-      this.imgToDisplay.set(null);
-      this.repalyImgToDisplay.set(null);
+      this.selectedImage = null;
+      this.removeOriginalEditImage.set(true);
+      return;
     }
-    if (this.selectedImage) this.selectedImage = null;
-    if (this.repalySelectedImage) this.repalySelectedImage = null;
+
+    this.imgToDisplay.set(null);
+    this.selectedImage = null;
+    this.repalyImgToDisplay.set(null);
+    this.repalySelectedImage = null;
   }
 
-  createComment(e: SubmitEvent, form: HTMLFormElement) {
-    e.preventDefault();
+  createComment(event: SubmitEvent, form: HTMLFormElement): void {
+    event.preventDefault();
     this.showCreateCommentError.set(false);
 
-    const myFormData = new FormData();
-
-    if (this.contant.value && this.contant.valid) {
-      myFormData.append('content', this.contant.value);
+    const content = String(this.contant.value ?? '').trim();
+    if (content && this.contant.invalid) {
+      this.showCreateCommentError.set(true);
+      return;
     }
-    if (this.selectedImage) {
-      myFormData.append('image', this.selectedImage);
-    }
-    if (!this.contant.value && this.contant.valid && !this.selectedImage) {
+    if (!content && !this.selectedImage) {
       this.showCreateCommentError.set(true);
       return;
     }
 
-    this.postsService.createCommentOnPost(this.postId(), myFormData).subscribe(() => {
-      this.getPostComment();
-      this.contant.setValue('');
-      form.reset();
-      this.cancelImg();
+    const formData = new FormData();
+    if (content) formData.append('content', content);
+    if (this.selectedImage) formData.append('image', this.selectedImage);
+
+    this.postsService.createCommentOnPost(this.postId(), formData).subscribe({
+      next: () => {
+        this.getPostComment();
+        this.contant.reset('');
+        form.reset();
+        this.imgToDisplay.set(null);
+        this.selectedImage = null;
+      },
+      error: (error) => console.error('Failed to create comment:', error),
     });
   }
 
-  createReplay(e: SubmitEvent, form: HTMLFormElement, commentId: string) {
-    e.preventDefault();
+  createReplay(event: SubmitEvent, form: HTMLFormElement, commentId: string): void {
+    event.preventDefault();
     this.showCreateReplayCommentError.set(false);
 
-    const myFormData = new FormData();
-
-    if (this.replaycontant.value && this.replaycontant.valid) {
-      myFormData.append('content', this.replaycontant.value);
+    const content = String(this.replaycontant.value ?? '').trim();
+    if (content && this.replaycontant.invalid) {
+      this.showCreateReplayCommentError.set(true);
+      return;
     }
-    if (this.repalySelectedImage) {
-      myFormData.append('image', this.repalySelectedImage);
-    }
-    if (!this.replaycontant.value && this.replaycontant.invalid && !this.repalySelectedImage) {
+    if (!content && !this.repalySelectedImage) {
       this.showCreateReplayCommentError.set(true);
       return;
     }
 
-    this.postsService.createCommentReplays(this.postId(), commentId, myFormData).subscribe(() => {
-      this.showReplays.set(false);
-      this.getPostComment();
-      this.replaycontant.setValue('');
-      form.reset();
-      this.cancelImg();
+    const formData = new FormData();
+    if (content) formData.append('content', content);
+    if (this.repalySelectedImage) formData.append('image', this.repalySelectedImage);
+
+    this.postsService.createCommentReplays(this.postId(), commentId, formData).subscribe({
+      next: () => {
+        this.replaycontant.reset('');
+        form.reset();
+        this.repalyImgToDisplay.set(null);
+        this.repalySelectedImage = null;
+        this.postsService.getCommentReplays(this.postId(), commentId).subscribe({
+          next: (res: any) => this.replays.set(res.data.replies ?? []),
+          error: (error) => console.error('Failed to refresh replies:', error),
+        });
+        this.getPostComment();
+      },
+      error: (error) => console.error('Failed to create reply:', error),
     });
   }
 
-  onFileSelectedInEdit(e: Event) {
-    if (e.target) {
-      const target = e.target as HTMLInputElement;
-      if (target.files && target.files.length) {
-        this.selectedImage = target.files[0];
-        const fileReader = new FileReader();
-        fileReader.readAsDataURL(this.selectedImage);
-        fileReader.onload = (e: ProgressEvent<FileReader>) => {
-          this.imgToDisplay.set(e.target?.result);
-        };
-      }
-    }
-  }
-
-  toggleCommentMenu(commentId: string) {
-    this.currentCommentId.set(commentId);
-    this.toggleCommentMenuFlag.update((state) => !state);
-  }
-
-  deletePost(id: string) {
-    this.postsService.deletePost(id).subscribe(() => {});
-  }
-
-  editPost(id: string, form: HTMLFormElement, e: SubmitEvent) {
-    e.preventDefault();
-    let myformData = new FormData();
-    console.log(this.selectedImage);
-
-    if (this.selectedImage) {
-      myformData.append('image', this.selectedImage);
-    }
-    if (this.contant.value && this.contant.valid) {
-      myformData.append('body', this.contant.value);
-    }
-
-    if (!this.contant.value && this.contant.invalid && !this.selectedImage) {
-      this.showCreateCommentError.set(true);
-      return;
-    }
-
-    this.postsService.editePost(id, myformData).subscribe(() => {
-      form.reset();
-      this.closeCommentEditor();
+  deletePost(id: string): void {
+    this.postsService.deletePost(id).subscribe({
+      error: (error) => console.error('Failed to delete post:', error),
     });
   }
 
-  closeCommentEditorOnTouch(e: Event): void {
-    e?.stopPropagation();
-    const ele = e.target as HTMLDivElement;
-    if (!ele) return;
-    const eleId = ele.id;
-    if (eleId !== 'model') return;
-    this.closeCommentEditor();
+  editPost(id: string, form: HTMLFormElement, event: SubmitEvent): void {
+    event.preventDefault();
+    const formData = new FormData();
+    if (this.selectedImage) formData.append('image', this.selectedImage);
+    formData.append('body', String(this.contant.value ?? ''));
+
+    this.postsService.editePost(id, formData).subscribe({
+      next: () => {
+        form.reset();
+        this.closeCommentEditor();
+      },
+      error: (error) => console.error('Failed to edit post:', error),
+    });
+  }
+
+  closeCommentEditorOnTouch(event: Event): void {
+    if (event.target === event.currentTarget) this.closeCommentEditor();
   }
 
   closeCommentEditor(): void {
     this.showPostEditor.set(false);
-    this.cancelImg();
-    this.contant = new FormControl('');
-  }
-
-  likeAndUnlikeComment(comentId: string) {
-    this.postsService.likeAndUlikeComment(this.postId(), comentId).subscribe(() => {
-      this.getPostComment();
-    });
+    this.imgToDisplay.set(null);
+    this.selectedImage = null;
+    this.contant.reset('');
   }
 }

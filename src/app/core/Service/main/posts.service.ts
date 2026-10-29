@@ -18,7 +18,10 @@ export class PostsService {
   }
 
   createPost(body: FormData): Observable<object> {
-    return this.httpClient.post(environment.BASE_URL + `posts`, body);
+    return this.httpClient.post(environment.BASE_URL + `posts`, body, {
+      observe: 'events',
+      reportProgress: true,
+    });
   }
 
   savePost(postId: string): Observable<object> {

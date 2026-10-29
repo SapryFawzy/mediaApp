@@ -39,11 +39,12 @@ export class PostsComponent {
   postesType: InputSignal<string> = input('');
   user: WritableSignal<WritableSignal<IUserProfile>> = signal(this.userService.user);
   imgToDisplay: WritableSignal<string | ArrayBuffer | null | undefined> = signal(null);
-  selectedImg!: File;
+  selectedImg: File | null = null;
   contant = new FormControl('');
   privacy = new FormControl('public');
   posts: WritableSignal<Post[]> = signal([] as Post[]);
   showCreatePostError: WritableSignal<boolean> = signal(false);
+  showUploadError: WritableSignal<boolean> = signal(false);
   showEmojiPicker: WritableSignal<boolean> = signal(false);
   postTextarea = viewChild<ElementRef<HTMLTextAreaElement>>('bindTextarea');
   emojis: string[] = [
@@ -88,9 +89,7 @@ export class PostsComponent {
     '🚀',
   ];
 
-  ngOnInit(): void {
-    this.getAllPosts();
-  }
+  isNewPostAdded: WritableSignal<boolean> = signal(false);
 
   toggleEmojiPicker(): void {
     this.showEmojiPicker.update((state) => !state);
@@ -140,12 +139,13 @@ export class PostsComponent {
 
   cancelImg() {
     this.imgToDisplay.set(null);
-    this.selectedImg = {} as File;
+    this.selectedImg = null;
   }
 
   createPost(e: SubmitEvent, createPostForm: HTMLFormElement) {
     e.preventDefault();
     this.showCreatePostError.set(false);
+    this.showUploadError.set(false);
     let myformData = new FormData();
     if (this.selectedImg) {
       myformData.append('image', this.selectedImg);
@@ -156,19 +156,20 @@ export class PostsComponent {
     if (this.privacy.value) {
       myformData.append('privacy', this.privacy.value);
     }
+    console.log([...myformData]);
+    
     if (!this.selectedImg && !this.contant.value) {
       this.showCreatePostError.set(true);
       return;
     }
     this.postsService.createPost(myformData).subscribe({
-      next: (res) => {
-        console.log(res);
-        this.getAllPosts();
+      next: (res: any) => {
         createPostForm.reset();
         this.cancelImg();
+        this.isNewPostAdded.set(true);
       },
-      error: (error) => {
-        console.log(error);
+      error: (error: Error) => {
+        this.showUploadError.set(true);
       },
     });
   }

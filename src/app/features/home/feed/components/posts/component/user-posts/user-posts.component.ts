@@ -1,4 +1,4 @@
-import { Component, inject, input, output, signal, WritableSignal } from '@angular/core';
+import { Component, effect, inject, input, output, signal, WritableSignal } from '@angular/core';
 import { Post } from '../../../../../../../core/models/post.interface';
 import { PostsService } from '../../../../../../../core/Service/main/posts.service';
 import { PostComponent } from '../post/post.component';
@@ -12,7 +12,15 @@ import { PostComponent } from '../post/post.component';
 export class UserPostsComponent {
   private readonly postsService = inject(PostsService);
   posts: WritableSignal<Post[]> = signal([]);
-  udatePosts = output<boolean>();
+  isNewPostAdded = input(false);
+
+  constructor() {
+    effect(() => {
+      if (this.isNewPostAdded()) {
+        this.getUserPosts();
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.getUserPosts();

@@ -222,12 +222,20 @@
     </div>
   }
 
+  @if (showUploadError()) {
+    <div class="border-red-400 border rounded-2xl mt-2 py-2 px-4">
+      <app-form-error-msg
+        [errorMsg]="'an error happend please try again 🤔!'"
+      ></app-form-error-msg>
+    </div>
+  }
+
   @if (postesType() === 'feed') {
-    <app-feed-posts></app-feed-posts>
+    <app-feed-posts [isNewPostAdded]="isNewPostAdded()"></app-feed-posts>
   } @else if (postesType() === 'myPosts') {
-    <app-user-posts></app-user-posts>
+    <app-user-posts [isNewPostAdded]="isNewPostAdded()"></app-user-posts>
   } @else if (postesType() === 'community') {
-    <app-community-posts [posts]="posts()" (udatePosts)="getAllPosts()"></app-community-posts>
+    <app-community-posts [isNewPostAdded]="isNewPostAdded()"></app-community-posts>
   } @else if (postesType() === 'saved') {
     <app-booked-posts></app-booked-posts>
   }

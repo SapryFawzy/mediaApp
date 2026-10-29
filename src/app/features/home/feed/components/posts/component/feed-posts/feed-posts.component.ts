@@ -1,4 +1,4 @@
-import { Component, inject, input, output, signal, WritableSignal } from '@angular/core';
+import { Component, effect, inject, input, output, signal, WritableSignal } from '@angular/core';
 import { Post } from '../../../../../../../core/models/post.interface';
 import { PostComponent } from '../post/post.component';
 import { PostsService } from '../../../../../../../core/Service/main/posts.service';
@@ -12,6 +12,15 @@ import { PostsService } from '../../../../../../../core/Service/main/posts.servi
 export class FeedPostsComponent {
   private readonly postsService = inject(PostsService);
   posts: WritableSignal<Post[]> = signal([] as Post[]);
+  isNewPostAdded = input(false);
+
+  constructor() {
+    effect(() => {
+      if (this.isNewPostAdded()) {
+        this.getUserPosts();
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.getUserPosts();

@@ -92,7 +92,6 @@ export class Profile implements OnInit {
     }
     this.userService.uploadUserPhoto(formData).subscribe(() => {
       this.getUserProfileData();
-      this.userService.updateUserData();
       this.getUserPosts();
       this.getSavedPosts();
     });
